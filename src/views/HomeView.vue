@@ -49,7 +49,7 @@ const totalPrice = computed(() =>  $cartStore.cart.reduce((acc, item) => acc + i
     <div v-show="!showProductSearch" class="relative lg:h-screen lg:flex">
       <main class="lg:w-2/5 p-10 lg:h-screen bg-slate-100 space-y-6">
         <section class="space-y-4">
-          <h2 class='text-3xl font-black text-black'>Buscar productos</h2>
+          <h2 class='text-3xl font-black text-black'>Buscar productos, hola desde Dev</h2>
           
           <label for="search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
           
