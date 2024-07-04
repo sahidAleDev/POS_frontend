@@ -47,7 +47,7 @@ const pokemons = ref<Pokemon[]>([])
 const fetchPokemons = async () => {
   try {
     const pokemonPromises = [];
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 20; i++) {
       pokemonPromises.push(axios.get(`${apiBaseUrl}/pokemon/${i}`));
     }
     const responses = await Promise.all(pokemonPromises);
