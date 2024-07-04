@@ -32,6 +32,7 @@ const $router = useRouter();
 const showProductSearch = ref<boolean>(false);
 const totalPrice = computed(() =>  $cartStore.cart.reduce((acc, item) => acc + item.price * item.quantity, 0));
 
+const apiBaseUrl = import.meta.env.VITE_POKE_API_BASE_URL
 const pokemon = ref({
   name: '',
   sprite: ''
@@ -39,7 +40,7 @@ const pokemon = ref({
 
 const fetchPokemon = async () => {
   try {
-    const response = await axios.get('https://pokeapi.co/api/v2/pokemon/1')
+    const response = await axios.get(`${apiBaseUrl}/pokemon/1`)
     pokemon.value.name = response.data.name
     pokemon.value.sprite = response.data.sprites.front_default
     console.log('Pokemon:', pokemon.value)
