@@ -32,25 +32,41 @@ const $router = useRouter();
 const showProductSearch = ref<boolean>(false);
 const totalPrice = computed(() =>  $cartStore.cart.reduce((acc, item) => acc + item.price * item.quantity, 0));
 
-const apiBaseUrl = import.meta.env.VITE_POKE_API_BASE_URL
-const pokemon = ref({
-  name: '',
-  sprite: ''
-})
+interface Pokemon {
+  id: number;
+  name: string;
+  sprite: string;
+  types: string[];
+  height: number;
+  weight: number;
+}
 
-const fetchPokemon = async () => {
+const apiBaseUrl = import.meta.env.VITE_POKE_API_BASE_URL
+const pokemons = ref<Pokemon[]>([])
+
+const fetchPokemons = async () => {
   try {
-    const response = await axios.get(`${apiBaseUrl}/pokemon/1`)
-    pokemon.value.name = response.data.name
-    pokemon.value.sprite = response.data.sprites.front_default
-    console.log('Pokemon:', pokemon.value)
+    const pokemonPromises = [];
+    for (let i = 1; i <= 5; i++) {
+      pokemonPromises.push(axios.get(`${apiBaseUrl}/pokemon/${i}`));
+    }
+    const responses = await Promise.all(pokemonPromises);
+    pokemons.value = responses.map(response => ({
+      id: response.data.id,
+      name: response.data.name,
+      sprite: response.data.sprites.front_default,
+      types: response.data.types.map((type: any) => type.type.name),
+      height: response.data.height,
+      weight: response.data.weight
+    }));
+    console.log('Pokemons:', pokemons.value);
   } catch (error) {
-    console.error('Error fetching Pokemon:', error)
+    console.error('Error fetching Pokemons:', error);
   }
 }
 
 onMounted(() => {
-  fetchPokemon()
+  fetchPokemons();
 })
 </script>
 
@@ -73,10 +89,16 @@ onMounted(() => {
         <section class="space-y-4">
           <h2 class='text-3xl font-black text-black'>Buscar productos, hola desde Dev</h2>
           
-          <div class="flex items-center space-x-4">
-            <img :src="pokemon.sprite" :alt="pokemon.name" class="w-20 h-20 rounded-full" />
-            <p class="text-lg font-semibold text-gray-900">Hola, soy {{ pokemon.name }}</p>
+          <div class="flex items-center space-x-4 overflow-x-auto">
+            <div v-for="pokemon in pokemons" :key="pokemon.id" class="flex flex-col items-center">
+              <img :src="pokemon.sprite" :alt="pokemon.name" class="w-20 h-20" />
+              <p class="text-sm font-semibold text-gray-900">{{ pokemon.name }}</p>
+              <p class="text-xs text-gray-600">Types: {{ pokemon.types.join(', ') }}</p>
+              <p class="text-xs text-gray-600">Height: {{ pokemon.height / 10 }}m</p>
+              <p class="text-xs text-gray-600">Weight: {{ pokemon.weight / 10 }}kg</p>
+            </div>
           </div>
+          
           <label for="search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
           
           <div class="relative">
