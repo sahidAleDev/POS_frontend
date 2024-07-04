@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { ROUTE_NAME } from '@/router/names'
 import { toCurrency } from '@/helpers';
 import { useCartStore } from '@/stores/cart';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 /**
  * ------------------------------------------
@@ -30,6 +31,26 @@ const $router = useRouter();
  */
 const showProductSearch = ref<boolean>(false);
 const totalPrice = computed(() =>  $cartStore.cart.reduce((acc, item) => acc + item.price * item.quantity, 0));
+
+const pokemon = ref({
+  name: '',
+  sprite: ''
+})
+
+const fetchPokemon = async () => {
+  try {
+    const response = await axios.get('https://pokeapi.co/api/v2/pokemon/1')
+    pokemon.value.name = response.data.name
+    pokemon.value.sprite = response.data.sprites.front_default
+    console.log('Pokemon:', pokemon.value)
+  } catch (error) {
+    console.error('Error fetching Pokemon:', error)
+  }
+}
+
+onMounted(() => {
+  fetchPokemon()
+})
 </script>
 
 <template>
@@ -51,6 +72,10 @@ const totalPrice = computed(() =>  $cartStore.cart.reduce((acc, item) => acc + i
         <section class="space-y-4">
           <h2 class='text-3xl font-black text-black'>Buscar productos, hola desde Dev</h2>
           
+          <div class="flex items-center space-x-4">
+            <img :src="pokemon.sprite" :alt="pokemon.name" class="w-20 h-20 rounded-full" />
+            <p class="text-lg font-semibold text-gray-900">Hola, soy {{ pokemon.name }}</p>
+          </div>
           <label for="search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
           
           <div class="relative">
